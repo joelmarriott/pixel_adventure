@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flutter/src/services/hardware_keyboard.dart';
 import 'package:flutter/src/services/keyboard_key.g.dart';
+import 'package:pixel_adventure/components/collision_block.dart';
+import 'package:pixel_adventure/components/utils.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running }
@@ -19,10 +21,12 @@ class Player extends SpriteAnimationGroupComponent
   double joystickMovement = 0;
   double moveSpeed = 100;
   Vector2 velocity = Vector2.zero();
+  List<CollisionBlock> collisionBlocks = [];
 
   @override
   FutureOr<void> onLoad() {
     _loadAllAnimations();
+    debugMode = true;
     return super.onLoad();
   }
 
@@ -30,6 +34,7 @@ class Player extends SpriteAnimationGroupComponent
   void update(double dt) {
     _updatePlayerState();
     _updatePlayerMovement(dt);
+    _checkHorizontalCollisions();
     super.update(dt);
   }
 
@@ -75,9 +80,9 @@ class Player extends SpriteAnimationGroupComponent
   void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
 
-    if(velocity.x < 0 && scale.x > 0) {
+    if (velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
-    } else if(velocity.x > 0 && scale.x < 0) {
+    } else if (velocity.x > 0 && scale.x < 0) {
       flipHorizontallyAroundCenter();
     }
 
@@ -89,5 +94,22 @@ class Player extends SpriteAnimationGroupComponent
   void _updatePlayerMovement(double dt) {
     velocity.x = (horizontalMovement + joystickMovement) * moveSpeed;
     position.x += velocity.x * dt;
+  }
+
+  void _checkHorizontalCollisions() {
+    for (final block in collisionBlocks) {
+      if (!block.isPlatform) {
+        if (checkCollision(this, block)) {
+          if (velocity.x > 0) {
+            velocity.x = 0;
+            position.x = block.x - width;
+          }
+          if (velocity.x < 0) {
+            velocity.x = 0;
+            position.x = block.x + block.width + width;
+          }
+        }
+      }
+    }
   }
 }

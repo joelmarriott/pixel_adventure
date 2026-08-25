@@ -19,7 +19,7 @@ class Level extends World {
     add(level);
 
     final spawnPointsLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoints');
-    if(spawnPointsLayer != null) {
+    if (spawnPointsLayer != null) {
       for (final spawnPoint in spawnPointsLayer!.objects) {
         switch (spawnPoint.class_) {
           case 'Player':
@@ -32,28 +32,30 @@ class Level extends World {
     }
 
     final collisionsLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
-    if(collisionsLayer != null) {
-      for(final collision in collisionsLayer.objects) {
+    if (collisionsLayer != null) {
+      for (final collision in collisionsLayer.objects) {
         switch (collision.class_) {
           case 'Platform':
             final platform = CollisionBlock(
               position: Vector2(collision.x, collision.y),
               size: Vector2(collision.width, collision.height),
-              isPlatform: true
+              isPlatform: true,
             );
             collisionBlocks.add(platform);
             add(platform);
             break;
           default:
             final block = CollisionBlock(
-                position: Vector2(collision.x, collision.y),
-                size: Vector2(collision.width, collision.height),
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(collision.width, collision.height),
             );
             collisionBlocks.add(block);
             add(block);
         }
       }
     }
+
+    player.collisionBlocks = collisionBlocks;
 
     return super.onLoad();
   }
