@@ -105,6 +105,9 @@ class Player extends SpriteAnimationGroupComponent
   void _updatePlayerMovement(double dt) {
     if (hasJumped && isOnGround) _playerJump(dt);
 
+    // Optional, not allowed to jump while falling
+    if (velocity.y > _gravity) isOnGround = false;
+
     velocity.x = (horizontalMovement + joystickMovement) * moveSpeed;
     position.x += velocity.x * dt;
   }
@@ -143,21 +146,20 @@ class Player extends SpriteAnimationGroupComponent
 
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
-      if (block.isPlatform) {
-      } else {
-        if (checkCollision(this, block)) {
-          if (velocity.y > 0) {
-            velocity.y = 0;
-            position.y = block.y - height;
-            isOnGround = true;
-            break;
-          }
-          if (velocity.y < 0) {
-            velocity.y = 0;
-            position.y = block.y + block.height;
-            isOnGround = true;
-            break;
-          }
+      if (checkCollision(this, block)) {
+        if (velocity.y > 0) {
+          velocity.y = 0;
+          position.y = block.y - height;
+          isOnGround = true;
+          break;
+        }
+        if (block.isPlatform) {
+          continue;
+        }
+        if (velocity.y < 0) {
+          velocity.y = 0;
+          position.y = block.y + block.height;
+          break;
         }
       }
     }
