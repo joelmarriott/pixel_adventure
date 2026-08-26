@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:pixel_adventure/components/background_tile.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 import 'package:pixel_adventure/components/player.dart';
+import 'package:pixel_adventure/pixel_adventure.dart';
 
-class Level extends World {
+class Level extends World with HasGameReference<PixelAdventure>{
   final String levelName;
   final Player player;
   Level({required this.levelName, required this.player});
@@ -16,10 +18,37 @@ class Level extends World {
   FutureOr<void> onLoad() async {
     level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
 
-    add(level);
+    // add(level);
 
+    _scrollingBackround();
+    _spawningObjects();
+    _addCollisions();
+
+    return super.onLoad();
+  }
+
+  void _scrollingBackround() {
+    final backgroundLayer = level.tileMap.getLayer('Background');
+    if(backgroundLayer == null) return;
+    const tileSize = 64;
+    final numTilesY = (game.size.y / tileSize).floor();
+    final numTilesX = (game.size.x / tileSize).floor();
+    final backgroundColor = backgroundLayer.properties.getValue('BackgroundColor');
+
+    for(double y = 0; y < numTilesY; y++) {
+      for(double x = 0; x < numTilesX; x++) {
+        final backgroundTile = BackgroundTile(
+          color: backgroundColor ?? 'Gray',
+          position: Vector2(x * tileSize - tileSize, y * tileSize - tileSize)
+        );
+        add(backgroundTile);
+      }
+    }
+  }
+
+  void _spawningObjects() {
     final spawnPointsLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoints');
-    if (spawnPointsLayer != null) {
+    if(spawnPointsLayer != null) {
       for (final spawnPoint in spawnPointsLayer!.objects) {
         switch (spawnPoint.class_) {
           case 'Player':
@@ -30,7 +59,9 @@ class Level extends World {
         }
       }
     }
+  }
 
+  void _addCollisions() {
     final collisionsLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
     if (collisionsLayer != null) {
       for (final collision in collisionsLayer.objects) {
@@ -56,7 +87,5 @@ class Level extends World {
     }
 
     player.collisionBlocks = collisionBlocks;
-
-    return super.onLoad();
   }
 }
