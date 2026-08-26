@@ -18,7 +18,7 @@ class Level extends World with HasGameReference<PixelAdventure>{
   FutureOr<void> onLoad() async {
     level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
 
-    // add(level);
+    add(level);
 
     _scrollingBackround();
     _spawningObjects();
@@ -33,9 +33,9 @@ class Level extends World with HasGameReference<PixelAdventure>{
     const tileSize = 64;
     final numTilesY = (game.size.y / tileSize).floor();
     final numTilesX = (game.size.x / tileSize).floor();
-    final backgroundColor = backgroundLayer.properties.getValue('BackgroundColor');
+    final backgroundColor = backgroundLayer.properties.getValue('BackgroundColour');
 
-    for(double y = 0; y < numTilesY; y++) {
+    for(double y = 0; y < numTilesY + 1; y++) {
       for(double x = 0; x < numTilesX; x++) {
         final backgroundTile = BackgroundTile(
           color: backgroundColor ?? 'Gray',
