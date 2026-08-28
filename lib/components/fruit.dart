@@ -39,22 +39,19 @@ class Fruit extends SpriteAnimationComponent with HasGameReference<PixelAdventur
     return super.onLoad();
   }
 
-  void collidedWithPlayer() {
-    if(!_collected) {
-      animation = SpriteAnimation.fromFrameData(
-        game.images.fromCache('Items/Fruits/Collected.png'),
-        SpriteAnimationData.sequenced(
-          amount: 6,
-          stepTime: stepTime,
-          textureSize: Vector2.all(32),
-          loop: false
-        )
-      );
-      _collected = true;
-    }
-    Future.delayed(
-      const Duration(milliseconds: 400),
-      () => removeFromParent()
+  void collidedWithPlayer() async {
+    animation = SpriteAnimation.fromFrameData(
+      game.images.fromCache('Items/Fruits/Collected.png'),
+      SpriteAnimationData.sequenced(
+        amount: 6,
+        stepTime: stepTime,
+        textureSize: Vector2.all(32),
+        loop: false
+      )
     );
+    _collected = true;
+
+    await animationTicker?.completed;
+    removeFromParent();
   }
 }
