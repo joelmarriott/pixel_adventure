@@ -19,24 +19,18 @@ class PixelAdventure extends FlameGame
   late JoystickComponent joystick;
   bool showJoystick = true;
 
+  List<String> levelNames = ["Level-01", "Level-02"];
+  int currentLevelIndex = 0;
+
   @override
   FutureOr<void> onLoad() async {
     await images.loadAllImages();
 
-    final world = Level(player: player, levelName: 'Level-01');
-
-    final camera = CameraComponent.withFixedResolution(
-      world: world,
-      width: 640,
-      height: 360,
-    );
-    camera.viewfinder.anchor = Anchor.topLeft;
+    _loadLevel();
 
     if (showJoystick) {
       addJoystick();
     }
-
-    addAll([camera, world]);
 
     return super.onLoad();
   }
@@ -77,5 +71,29 @@ class PixelAdventure extends FlameGame
         player.joystickMovement = 0;
         break;
     }
+  }
+
+  void loadNextLevel() {
+    if (currentLevelIndex < levelNames.length - 1) {
+      currentLevelIndex++;
+      _loadLevel();
+    } else {
+      // No more levels
+    }
+  }
+
+  void _loadLevel() {
+    Future.delayed(const Duration(seconds: 1), () {
+      world = Level(player: player, levelName: levelNames[currentLevelIndex]);
+
+      camera = CameraComponent.withFixedResolution(
+        world: world,
+        width: 640,
+        height: 360,
+      );
+      camera.viewfinder.anchor = Anchor.topLeft;
+
+      addAll([camera, world]);
+    });
   }
 }
