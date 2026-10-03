@@ -31,24 +31,35 @@ class Level extends World with HasGameReference<PixelAdventure> {
   }
 
   void _scrollingBackround() {
+    // final backgroundLayer = level.tileMap.getLayer('Background');
+    // if (backgroundLayer == null) return;
+    // const tileSize = 64;
+    // final numTilesY = (game.size.y / tileSize).floor();
+    // final numTilesX = (game.size.x / tileSize).floor();
+    // final backgroundColor = backgroundLayer.properties.getValue(
+    //   'BackgroundColour',
+    // );
+
+    // for (double y = 0; y < numTilesY + 1; y++) {
+    //   for (double x = 0; x < numTilesX; x++) {
+    //     final backgroundTile = BackgroundTile(
+    //       color: backgroundColor ?? 'Gray',
+    //       position: Vector2(x * tileSize - tileSize, y * tileSize - tileSize),
+    //     );
+    //     add(backgroundTile);
+    //   }
+    // }
     final backgroundLayer = level.tileMap.getLayer('Background');
     if (backgroundLayer == null) return;
-    const tileSize = 64;
-    final numTilesY = (game.size.y / tileSize).floor();
-    final numTilesX = (game.size.x / tileSize).floor();
+
     final backgroundColor = backgroundLayer.properties.getValue(
       'BackgroundColour',
     );
-
-    for (double y = 0; y < numTilesY + 1; y++) {
-      for (double x = 0; x < numTilesX; x++) {
-        final backgroundTile = BackgroundTile(
-          color: backgroundColor ?? 'Gray',
-          position: Vector2(x * tileSize - tileSize, y * tileSize - tileSize),
-        );
-        add(backgroundTile);
-      }
-    }
+    final backgroundTile = BackgroundTile(
+      color: backgroundColor ?? 'Gray',
+      position: Vector2(0,0)
+    );
+    add(backgroundTile);
   }
 
   void _spawningObjects() {
